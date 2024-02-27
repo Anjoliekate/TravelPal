@@ -68,3 +68,7 @@ button {
   justify-content: center;
   align-items: center;
 }
+
+#returning-user-inputs {
+  display: none;
+}

@@ -14,7 +14,7 @@
         </ul>
       </div>
       <!-- vmodel only for input when data is being sent back to code-->
-      <div class="new-user-inputs">
+      <div id="new-user-inputs">
         <div id="input_box">
           <label>
             Name:
@@ -60,8 +60,34 @@
         </div>
         <br />
         <br />
+        <button v-on:click="addUser">Sign Up</button>
       </div>
-      <button v-on:click="addUser">Sign Up</button>
+      <div id="returning-user-inputs">
+        <div id="input_box">
+          <label>
+            Email:
+            <input
+              type="text"
+              placeholder="Enter your email"
+              v-model="newUserEmail"
+            />
+          </label>
+        </div>
+        <br />
+        <div id="input_box">
+          <label>
+            Password:
+            <input
+              type="text"
+              placeholder="Enter your password"
+              v-model="newUserPassword"
+            />
+          </label>
+        </div>
+        <br />
+        <br />
+        <button v-on:click="loginUser">Log In</button>
+      </div>
     </div>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="app.js"></script>

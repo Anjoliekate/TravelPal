@@ -54,105 +54,56 @@ Vue.createApp({
       return this.userIsValid;
     },
 
-    validateDestinationInputs: function () {
-      this.errorMessages = {};
-      if (
-        this.newDestinationName == undefined ||
-        this.newDestinationName == ""
-      ) {
-        this.errorMessages["user.destination"] = "Destination is required.";
-      }
-
-      return this.destinationIsValid;
-    },
-
-    validateInterestInputs: function () {
-      this.errorMessages = {};
-      if (this.newInterestName == undefined || this.newInterestName == "") {
-        this.errorMessages["user.interest"] = "Interest is required.";
-      }
-
-      return this.destinationIsValid;
-    },
-
     addUser: function () {
-      if (this.validateNewUserInputs()) {
-        var data = "name=" + encodeURIComponent(this.newUserName);
-        data += "&birthday=" + encodeURIComponent(this.newUserBirthday);
-        data += "&email=" + encodeURIComponent(this.newUserEmail);
-        data += "&password=" + encodeURIComponent(this.newUserPassword);
-        console.log("data: ", data);
-        const requestOptions = {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: data,
-        };
-        fetch("http://localhost:8080/users", requestOptions).then(
-          (response) => {
-            if (response.status == 201) {
-              this.loadUsersCollection();
-              console.log("user added.");
-            }
-          }
-        );
-      }
+      var data = "name=" + encodeURIComponent(this.newUserName);
+      data += "&birthday=" + encodeURIComponent(this.newUserBirthday);
+      data += "&email=" + encodeURIComponent(this.newUserEmail);
+      data += "&password=" + encodeURIComponent(this.newUserPassword);
+      console.log("data: ", data);
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: data,
+      };
+      fetch("http://localhost:8080/users", requestOptions).then((response) => {
+        if (response.status == 201) {
+          this.loadUsersCollection();
+          console.log("user added.");
+          //hide the sign up screen
+          this.newUserName = "";
+          this.newUserBirthday = "";
+          this.newUserEmail = "";
+          this.newUserPassword = "";
+          this.displayLogin();
+        }
+      });
     },
 
-    addDestination: function (userId) {
-      const user = this.users.find((user) => user.id == userId);
-      if (user) {
-        user.destinations.push(this.newDestinationName);
-      } else {
-        console.log("User not found.");
-      }
-      if (this.validateDestinationInputs()) {
-        var data = "destination=" + encodeURIComponent(this.newDestinationName);
-        console.log("data: ", data);
-        const requestOptions = {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: data,
-        };
-        fetch("http://localhost:8080/destinations", requestOptions).then(
-          (response) => {
-            if (response.status == 201) {
-              this.loadDestinationsCollection();
-              console.log("destination added.");
-            }
+    loginUser: function () {
+      if (this.validateReturningUserInputs()) {
+        fetch("http://localhost:8080/users").then((response) => {
+          // contains the status code, headers, and body etc.
+          if (response.status == 200) {
+            response.json().then((usersFromServer) => {
+              // use arrow function instead to continue the value of this.
+              console.log("recieved users from API: ", usersFromServer);
+              this.users = usersFromServer;
+              for (var i = 0; i < this.users.length; i++) {
+                if (
+                  this.users[i].email == this.returningUserEmail &&
+                  this.users[i].password == this.returningUserPassword
+                ) {
+                  console.log("user found");
+                  this.loadUserDestinations(this.users[i].id);
+                  this.loadUserInterests(this.users[i].id);
+                  break;
+                }
+              }
+            });
           }
-        );
-      }
-    },
-
-    addInterest: function (userId) {
-      const user = this.users.find((user) => user.id == userId);
-      if (user) {
-        user.interests.push(this.newInterestName);
-      } else {
-        console.log("User not found.");
-      }
-      if (this.validateInterestInputs()) {
-        var data = "interest=" + encodeURIComponent(this.newInterestName);
-        console.log("data: ", data);
-        const requestOptions = {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-          body: data,
-        };
-        fetch("http://localhost:8080/interests", requestOptions).then(
-          (response) => {
-            if (response.status == 201) {
-              this.loadInterestsCollection();
-              console.log("interest added.");
-            }
-          }
-        );
+        });
       }
     },
 
@@ -162,52 +113,34 @@ Vue.createApp({
         if (response.status == 200) {
           response.json().then((TravelsFromServer) => {
             // use arrow function instead to continue the value of this.
-            console.log("recieved foods from API: ", TravelsFromServer);
+            console.log("recieved users from API: ", TravelsFromServer);
             this.travels = TravelsFromServer;
           });
         }
       });
     },
-
-    loadDestinationsCollection: function () {
-      fetch("http://localhost:8080/users/:id/destinations").then((response) => {
-        if (response.status == 200) {
-          response.json().then((destinationsFromServer) => {
-            console.log(
-              "received destinations from API: ",
-              destinationsFromServer
-            );
-            const user = this.users.find((user) => user.id == user);
-            if (user) {
-              user.destinations = destinationsFromServer;
-            } else {
-              console.log("User not found.");
-            }
-          });
-        }
-      });
-    },
-    loadInterestsCollection: function () {
-      fetch("http://localhost:8080/users/:id/interests").then((response) => {
-        if (response.status == 200) {
-          response.json().then((interestsFromServer) => {
-            console.log("received interests from API: ", interestsFromServer);
-            const user = this.users.find((user) => user.id == user);
-            if (user) {
-              user.interests = interestsFromServer;
-            } else {
-              console.log("User not found.");
-            }
-          });
-        }
-      });
+    loadUserDestinations: function (userId) {
+      fetch(`http://localhost:8080/users/${userId}/destinations`)
+        .then((response) => response.json())
+        .then((destinations) => {
+          console.log("User Destinations:", destinations);
+        })
+        .catch((error) => {
+          console.error("Error fetching destinations:", error);
+        });
     },
 
-    computed: {
-      destinationIsValid: function () {
-        return Object.keys(this.errorMessages.length) == 0;
-      },
+    loadUserInterests: function (userId) {
+      fetch(`http://localhost:8080/users/${userId}/interests`)
+        .then((response) => response.json())
+        .then((interests) => {
+          console.log("User Interests:", interests);
+        })
+        .catch((error) => {
+          console.error("Error fetching interests:", error);
+        });
     },
+
     errorMessageForField: function (fieldName) {
       return this.errorMessages[fieldName];
     },
@@ -218,6 +151,14 @@ Vue.createApp({
         return {};
       }
     },
+    displayLogin: function () {
+      var newUserHomePage = document.getElementById("new-user-inputs");
+      newUserHomePage.style = "display:none";
+      var returningUserHomePage = document.getElementById(
+        "returning-user-inputs"
+      );
+      returningUserHomePage.style = "display:grid";
+    },
   },
 
   // IDs and classes only meant for css purposes shouldn't have to query them for js or for automated behaviour tests
@@ -226,7 +167,6 @@ Vue.createApp({
   // v-on establishes an event listener its a directive, data binding, rendering
   created: function () {
     console.log("Hello, vue.");
-    this.loadDestinationsCollection();
-    this.loadInterestsCollection();
+    this.loadUsersCollection();
   },
 }).mount("#app");

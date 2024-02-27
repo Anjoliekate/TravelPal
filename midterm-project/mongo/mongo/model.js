@@ -23,11 +23,6 @@ const User = mongoose.model("User", {
   interests: Array,
 });
 
-const Destination = mongoose.model("Destination", {
-  destinations: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-});
-
 module.exports = {
   User: User,
-  Destination: Destination,
 };
