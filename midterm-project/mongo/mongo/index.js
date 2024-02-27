@@ -1,9 +1,11 @@
 const express = require("express");
 const model = require("./model");
+const cors = require("cors");
 const app = express();
 
 // extended allows you to send different structures of URL encoded data
 app.use(express.urlencoded({ extended: false }));
+app.use(cors());
 
 // get all users
 app.get("/users", function (request, response) {
@@ -49,6 +51,33 @@ app.post("/users", function (request, response) {
   newUser.save().then(() => {
     response.set("Access-Control-Allow-Origin", "*");
     response.status(201).send("User added");
+  });
+});
+
+// check if user exists
+app.post("/login", function (request, response) {
+  const email = request.body.email;
+  const password = request.body.password;
+  //find the user by email in db
+  model.User.findOne({ email: email }).then((user) => {
+    if (!user || user.password !== password) {
+      response.status(401).send("Invalid credentials");
+    } else {
+      // authentication successful
+      response.set("Access-Control-Allow-Origin", "*");
+      response.status(200).send("Authentication successful");
+    }
+  });
+});
+
+// add a destination for a user
+app.post("/users/:id/destinations", function (request, response) {
+  model.User.findById(request.params.id).then((user) => {
+    user.destinations.push(request.body.destination);
+    user.save().then(() => {
+      response.set("Access-Control-Allow-Origin", "*");
+      response.status(201).send("Destination added");
+    });
   });
 });
 

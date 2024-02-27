@@ -61,6 +61,8 @@
         <br />
         <br />
         <button v-on:click="addUser">Sign Up</button>
+        Already have an account?
+        <button v-on:click="displayLogin">Log In</button>
       </div>
       <div id="returning-user-inputs">
         <div id="input_box">
@@ -69,7 +71,7 @@
             <input
               type="text"
               placeholder="Enter your email"
-              v-model="newUserEmail"
+              v-model="returningUserEmail"
             />
           </label>
         </div>
@@ -80,7 +82,7 @@
             <input
               type="text"
               placeholder="Enter your password"
-              v-model="newUserPassword"
+              v-model="returningUserPassword"
             />
           </label>
         </div>
@@ -88,6 +90,22 @@
         <br />
         <button v-on:click="loginUser">Log In</button>
       </div>
+      <div id="new-destination-input">
+        <div id="input_box">
+          <label>
+            Destination:
+            <input
+              type="text"
+              placeholder="Enter a destination"
+              v-model="newUserName"
+            />
+          </label>
+        </div>
+        <br />
+        <br />
+        <button v-on:click="addDestination">add destination</button>
+      </div>
+      <div id="destinations">
     </div>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="app.js"></script>

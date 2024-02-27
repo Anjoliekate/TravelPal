@@ -34,7 +34,7 @@ Vue.createApp({
       ) {
         this.errorMessages["user.password"] = "Password is required.";
       }
-      return this.userIsValid;
+      return this.userIsValid == true;
     },
 
     validateNewUserInputs: function () {
@@ -51,7 +51,7 @@ Vue.createApp({
       if (this.newUserPassword == undefined || this.newUserPassword == "") {
         this.errorMessages["user.password"] = "Password is required.";
       }
-      return this.userIsValid;
+      return this.userIsValid == true;
     },
 
     addUser: function () {
@@ -82,29 +82,32 @@ Vue.createApp({
     },
 
     loginUser: function () {
-      if (this.validateReturningUserInputs()) {
-        fetch("http://localhost:8080/users").then((response) => {
-          // contains the status code, headers, and body etc.
-          if (response.status == 200) {
-            response.json().then((usersFromServer) => {
-              // use arrow function instead to continue the value of this.
-              console.log("recieved users from API: ", usersFromServer);
-              this.users = usersFromServer;
-              for (var i = 0; i < this.users.length; i++) {
-                if (
-                  this.users[i].email == this.returningUserEmail &&
-                  this.users[i].password == this.returningUserPassword
-                ) {
-                  console.log("user found");
-                  this.loadUserDestinations(this.users[i].id);
-                  this.loadUserInterests(this.users[i].id);
-                  break;
-                }
-              }
-            });
+      var data = "email=" + encodeURIComponent(this.returningUserEmail);
+      data += "&password=" + encodeURIComponent(this.returningUserPassword);
+      console.log("data: ", data);
+      requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: data,
+      };
+      fetch("http://localhost:8080/login", requestOptions)
+        .then((response) => {
+          if (response.status === 200) {
+            var returningUserHomePage = document.getElementById(
+              "returning-user-inputs"
+            );
+            returningUserHomePage.style = "display:none";
+            var userHomePage = document.getElementById("new-destination-input");
+            userHomePage.style = "display:grid";
+          } else {
+            this.errorMessages.login = "Invalid email or password";
           }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
         });
-      }
     },
 
     loadUsersCollection: function () {
@@ -167,6 +170,5 @@ Vue.createApp({
   // v-on establishes an event listener its a directive, data binding, rendering
   created: function () {
     console.log("Hello, vue.");
-    this.loadUsersCollection();
   },
 }).mount("#app");
