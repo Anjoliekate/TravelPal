@@ -67,6 +67,7 @@ app.post("/login", function (request, response) {
       // authentication successful
       response.set("Access-Control-Allow-Origin", "*");
       response.status(200).send("Authentication successful");
+      response.userId = user._id;
     }
   });
 });

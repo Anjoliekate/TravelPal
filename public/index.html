@@ -124,6 +124,27 @@
             </div>
             <br />
             <br />
+            <div id="new-destination-input">
+              <div id="input_box">
+                <label>
+                  Interests:
+                  <div class="interests-list">
+                    <ul>
+                      <li v-for="interest in interests">
+                        <h3>
+                          <strong>{{user.interest}}</strong>
+                          <br />
+                        </h3>
+                      </li>
+                    </ul>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Enter a destination"
+                    v-model="newDestination"
+                  />
+                </label>
+              </div>
             <button v-on:click="addDestination">add destination</button>
           </div>
           <div id="destinations">
