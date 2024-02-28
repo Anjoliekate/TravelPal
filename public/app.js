@@ -22,19 +22,21 @@ Vue.createApp({
   methods: {
     validateReturningUserInputs: function () {
       this.errorMessages = {};
-      if (
-        this.returningUserEmail == undefined ||
-        this.returningUserEmail == ""
-      ) {
-        this.errorMessages["user.email"] = "Email is required.";
+      if (!this.isEmailValid(this.newUserEmail)) {
+        this.errorMessages["user.email"] = "Email is invalid.";
       }
+
       if (
-        this.returningUserPassword == undefined ||
-        this.returningUserPassword == ""
+        this.newUserPassword == undefined ||
+        this.newUserPassword.length < 8
       ) {
-        this.errorMessages["user.password"] = "Password is required.";
+        this.errorMessages["user.password"] =
+          "Password must be at least 8 characters.";
       }
-      return;
+
+      console.log(Object.keys(this.errorMessages).length);
+
+      return Object.keys(this.errorMessages).length == 0;
     },
 
     isNewUserValid: function () {
@@ -96,6 +98,7 @@ Vue.createApp({
     },
 
     loginUser: function () {
+      if (!this.validateReturningUserInputs()) return;
       var data = "email=" + encodeURIComponent(this.returningUserEmail);
       data += "&password=" + encodeURIComponent(this.returningUserPassword);
       console.log("data: ", data);

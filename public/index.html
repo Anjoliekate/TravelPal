@@ -75,6 +75,12 @@
             <button v-on:click="displayLogin">Log In</button>
           </div>
           <div id="returning-user-inputs">
+            <div v-if="validationErrors">
+              Please correct the following error(s):
+              <ul>
+                <li v-for="error in errorMessages">{{error}}</li>
+              </ul>
+            </div>
             <p>Welcome back! Login to continue your journey.</p>
             <div id="input_box">
               <label>
