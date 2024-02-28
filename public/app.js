@@ -115,8 +115,11 @@ Vue.createApp({
             returningUserHomePage.style = "display:none";
             var userHomePage = document.getElementById("new-destination-input");
             userHomePage.style = "display:grid";
-            this.loadUserDestinations(response.userId);
-            this.loadUserInterests(response.userId);
+            response.json().then((data) => {
+              console.log("User ID:", data.userId);
+              this.loadUserDestinations(data.userId);
+              this.loadUserInterests(data.userId);
+            });
           } else {
             this.errorMessages.login = "Invalid email or password";
           }
