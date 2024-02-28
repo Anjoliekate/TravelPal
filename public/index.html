@@ -104,11 +104,21 @@
           <div id="new-destination-input">
             <div id="input_box">
               <label>
-                Destination:
+                Destinations:
+                <div class="destination-list">
+                  <ul>
+                    <li v-for="destination in destinations">
+                      <h3>
+                        <strong>{{user.destination}}</strong>
+                        <br />
+                      </h3>
+                    </li>
+                  </ul>
+                </div>
                 <input
                   type="text"
                   placeholder="Enter a destination"
-                  v-model="newUserName"
+                  v-model="newDestination"
                 />
               </label>
             </div>
