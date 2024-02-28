@@ -34,27 +34,41 @@ Vue.createApp({
       ) {
         this.errorMessages["user.password"] = "Password is required.";
       }
-      return this.userIsValid == true;
+      return;
     },
 
-    validateNewUserInputs: function () {
+    isNewUserValid: function () {
       this.errorMessages = {};
       if (this.newUserName == undefined || this.newUserName == "") {
         this.errorMessages["user.name"] = "Name is required.";
       }
-      if (this.newUserBirthday == undefined || this.newUserBirthday == "") {
-        this.errorMessages["user.birthday"] = "Birthday is required.";
+
+      let birthDate = new Date(this.newUserBirthday);
+      if (birthDate == "Invalid Date") {
+        this.errorMessages["user.birthday"] = "Birthday is invalid.";
+      } else {
+        this.newUserBirthday = birthDate.toISOString().split("T")[0];
       }
-      if (this.newUserEmail == undefined || this.newUserEmail == "") {
-        this.errorMessages["user.email"] = "Email is required.";
+
+      if (!this.isEmailValid(this.newUserEmail)) {
+        this.errorMessages["user.email"] = "Email is invalid.";
       }
-      if (this.newUserPassword == undefined || this.newUserPassword == "") {
-        this.errorMessages["user.password"] = "Password is required.";
+
+      if (
+        this.newUserPassword == undefined ||
+        this.newUserPassword.length < 8
+      ) {
+        this.errorMessages["user.password"] =
+          "Password must be at least 8 characters.";
       }
-      return this.userIsValid == true;
+
+      console.log(Object.keys(this.errorMessages).length);
+
+      return Object.keys(this.errorMessages).length == 0;
     },
 
     addUser: function () {
+      if (!this.isNewUserValid()) return;
       var data = "name=" + encodeURIComponent(this.newUserName);
       data += "&birthday=" + encodeURIComponent(this.newUserBirthday);
       data += "&email=" + encodeURIComponent(this.newUserEmail);
@@ -110,6 +124,14 @@ Vue.createApp({
         });
     },
 
+    isEmailValid: function (email) {
+      return String(email)
+        .toLowerCase()
+        .match(
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+    },
+
     loadUsersCollection: function () {
       fetch("http://localhost:8080/users").then((response) => {
         // contains the status code, headers, and body etc.
@@ -161,6 +183,12 @@ Vue.createApp({
         "returning-user-inputs"
       );
       returningUserHomePage.style = "display:grid";
+    },
+  },
+
+  computed: {
+    validationErrors: function () {
+      return Object.keys(this.errorMessages).length > 0;
     },
   },
 

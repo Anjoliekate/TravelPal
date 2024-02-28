@@ -2,110 +2,123 @@
 <html>
   <head>
     <link rel="stylesheet" href="style.css" />
+    <link href='https://fonts.googleapis.com/css?family=Knewave' rel='stylesheet'>
   </head>
   <body>
     <div id="app">
       <!-- this is my Vue app-->
-      <div class="title"><h1>TravelPal</h1></div>
-      <div v-if="!userIsValid">
-        Please correct the following error(s):
-        <ul>
-          <li v-for="error in errorMessage">{{error}}</li>
-        </ul>
+      <div id="LoginBox">
+        <div id="loginImage">
+          <img src="travel.jpg" alt="TravelPal" class="hero-image"/>
+        </div>
+       <div id="login">
+          <div class="title"><h1>TravelPal</h1></div>
+
+          <div v-if="validationErrors">
+            Please correct the following error(s):
+            <ul>
+              <li v-for="error in errorMessages">{{error}}</li>
+            </ul>
+          </div>
+          <!-- vmodel only for input when data is being sent back to code-->
+          <div id="new-user-inputs">
+            <p>Welcome! Sign up to start your journey.</p>
+
+            <div id="input_box">
+              <label>
+                Name:
+                <input
+                  type="text"
+                  placeholder="Username"
+                  v-model="newUserName"
+                />
+              </label>
+            </div>
+            <br />
+            <div id="input_box">
+              <label>
+                Birthday:
+                <input
+                  type="date"
+                  v-model="newUserBirthday"
+                />
+              </label>
+            </div>
+            <br />
+            <div id="input_box">
+              <label>
+                Email:
+                <input
+                  type="email"
+                  placeholder="Email"
+                  v-model="newUserEmail"
+                />
+              </label>
+            </div>
+            <br />
+            <div id="input_box">
+              <label>
+                Password:
+                <input
+                  type="password"
+                  placeholder="Password"
+                  v-model="newUserPassword"
+                />
+              </label>
+            </div>
+            <br />
+            <br />
+            <button v-on:click="addUser">Sign Up</button>
+            <br>
+            <p style="margin-bottom: -15px;">Already have an account?</p>
+            <br><br>
+            <button v-on:click="displayLogin">Log In</button>
+          </div>
+          <div id="returning-user-inputs">
+            <p>Welcome back! Login to continue your journey.</p>
+            <div id="input_box">
+              <label>
+                Email:
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  v-model="returningUserEmail"
+                />
+              </label>
+            </div>
+            <br />
+            <div id="input_box">
+              <label>
+                Password:
+                <input
+                  type="password"
+                  placeholder="Enter your password"
+                  v-model="returningUserPassword"
+                />
+              </label>
+            </div>
+            <br />
+            <br />
+            <button v-on:click="loginUser">Log In</button>
+          </div>
+          <div id="new-destination-input">
+            <div id="input_box">
+              <label>
+                Destination:
+                <input
+                  type="text"
+                  placeholder="Enter a destination"
+                  v-model="newUserName"
+                />
+              </label>
+            </div>
+            <br />
+            <br />
+            <button v-on:click="addDestination">add destination</button>
+          </div>
+          <div id="destinations">
+        </div>
       </div>
-      <!-- vmodel only for input when data is being sent back to code-->
-      <div id="new-user-inputs">
-        <div id="input_box">
-          <label>
-            Name:
-            <input
-              type="text"
-              placeholder="Enter your name"
-              v-model="newUserName"
-            />
-          </label>
-        </div>
-        <br />
-        <div id="input_box">
-          <label>
-            Birthday:
-            <input
-              type="text"
-              placeholder="Enter your birthday"
-              v-model="newUserBirthday"
-            />
-          </label>
-        </div>
-        <br />
-        <div id="input_box">
-          <label>
-            Email:
-            <input
-              type="text"
-              placeholder="Enter your email"
-              v-model="newUserEmail"
-            />
-          </label>
-        </div>
-        <br />
-        <div id="input_box">
-          <label>
-            Password:
-            <input
-              type="text"
-              placeholder="Enter your password"
-              v-model="newUserPassword"
-            />
-          </label>
-        </div>
-        <br />
-        <br />
-        <button v-on:click="addUser">Sign Up</button>
-        Already have an account?
-        <button v-on:click="displayLogin">Log In</button>
-      </div>
-      <div id="returning-user-inputs">
-        <div id="input_box">
-          <label>
-            Email:
-            <input
-              type="text"
-              placeholder="Enter your email"
-              v-model="returningUserEmail"
-            />
-          </label>
-        </div>
-        <br />
-        <div id="input_box">
-          <label>
-            Password:
-            <input
-              type="text"
-              placeholder="Enter your password"
-              v-model="returningUserPassword"
-            />
-          </label>
-        </div>
-        <br />
-        <br />
-        <button v-on:click="loginUser">Log In</button>
-      </div>
-      <div id="new-destination-input">
-        <div id="input_box">
-          <label>
-            Destination:
-            <input
-              type="text"
-              placeholder="Enter a destination"
-              v-model="newUserName"
-            />
-          </label>
-        </div>
-        <br />
-        <br />
-        <button v-on:click="addDestination">add destination</button>
-      </div>
-      <div id="destinations">
     </div>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="app.js"></script>
