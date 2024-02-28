@@ -81,7 +81,7 @@ Vue.createApp({
         },
         body: data,
       };
-      fetch("http://localhost:8080/users", requestOptions).then((response) => {
+      fetch("/users", requestOptions).then((response) => {
         if (response.status == 201) {
           this.loadUsersCollection();
           console.log("user added.");
@@ -106,7 +106,7 @@ Vue.createApp({
         },
         body: data,
       };
-      fetch("http://localhost:8080/login", requestOptions)
+      fetch("/login", requestOptions)
         .then((response) => {
           if (response.status === 200) {
             var returningUserHomePage = document.getElementById(
@@ -133,7 +133,7 @@ Vue.createApp({
     },
 
     loadUsersCollection: function () {
-      fetch("http://localhost:8080/users").then((response) => {
+      fetch("/users").then((response) => {
         // contains the status code, headers, and body etc.
         if (response.status == 200) {
           response.json().then((TravelsFromServer) => {
@@ -145,7 +145,7 @@ Vue.createApp({
       });
     },
     loadUserDestinations: function (userId) {
-      fetch(`http://localhost:8080/users/${userId}/destinations`)
+      fetch(`/users/${userId}/destinations`)
         .then((response) => response.json())
         .then((destinations) => {
           console.log("User Destinations:", destinations);
@@ -156,7 +156,7 @@ Vue.createApp({
     },
 
     loadUserInterests: function (userId) {
-      fetch(`http://localhost:8080/users/${userId}/interests`)
+      fetch(`/users/${userId}/interests`)
         .then((response) => response.json())
         .then((interests) => {
           console.log("User Interests:", interests);

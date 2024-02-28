@@ -6,6 +6,7 @@ const app = express();
 // extended allows you to send different structures of URL encoded data
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
+app.use(express.static("public"));
 
 // get all users
 app.get("/users", function (request, response) {
