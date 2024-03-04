@@ -131,13 +131,7 @@ Vue.createApp({
                   this.interests = interests;
                 });
             });
-            (this.currentUser = {
-              name: "",
-              birthday: "",
-              email: "",
-              password: "",
-            }),
-              this.loadUserInfo();
+            this.loadUserInfo();
             this.displayHomePage();
           } else {
             this.errorMessages.login = "Invalid email or password";
@@ -309,31 +303,33 @@ Vue.createApp({
 
     // remove an interest for a user
     removeInterest: function (interest) {
-      const userId = localStorage.getItem("userId");
-      if (!userId) {
-        console.error("User ID not found in local storage");
-        return;
+      if (confirm("Are you sure you want to remove this interest?")) {
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+          console.error("User ID not found in local storage");
+          return;
+        }
+        const requestOptions = {
+          method: "DELETE",
+        };
+        fetch(`/users/${userId}/interests/${interest}`, requestOptions)
+          .then((response) => {
+            if (response.status === 204) {
+              console.log("Interest removed successfully");
+              this.loadUserInterests(userId);
+              fetch(`/users/${userId}/interests`)
+                .then((response) => response.json())
+                .then((interests) => {
+                  this.interests = interests;
+                });
+            } else {
+              console.error("Failed to remove interest:", response.statusText);
+            }
+          })
+          .catch((error) => {
+            console.error("Error removing interest:", error);
+          });
       }
-      const requestOptions = {
-        method: "DELETE",
-      };
-      fetch(`/users/${userId}/interests/${interest}`, requestOptions)
-        .then((response) => {
-          if (response.status === 204) {
-            console.log("Interest removed successfully");
-            this.loadUserInterests(userId);
-            fetch(`/users/${userId}/interests`)
-              .then((response) => response.json())
-              .then((interests) => {
-                this.interests = interests;
-              });
-          } else {
-            console.error("Failed to remove interest:", response.statusText);
-          }
-        })
-        .catch((error) => {
-          console.error("Error removing interest:", error);
-        });
     },
 
     errorMessageForField: function (fieldName) {
