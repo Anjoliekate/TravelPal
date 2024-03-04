@@ -241,34 +241,39 @@ Vue.createApp({
     },
 
     removeDestination: function (destination) {
-      const userId = localStorage.getItem("userId");
-      if (!userId) {
-        console.error("User ID not found in local storage");
-        return;
+      if (confirm("Are you sure you want to remove this interest?")) {
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+          console.error("User ID not found in local storage");
+          return;
+        }
+        const requestOptions = {
+          method: "DELETE",
+        };
+        fetch(
+          `http://localhost:8080/users/${userId}/destinations/${destination}`,
+          requestOptions
+        )
+          .then((response) => {
+            if (response.status === 204) {
+              console.log("Destination removed successfully");
+              this.loadUserDestinations(userId);
+              fetch(`http://localhost:8080/users/${userId}/destinations`)
+                .then((response) => response.json())
+                .then((destinations) => {
+                  this.destinations = destinations;
+                });
+            } else {
+              console.error(
+                "Failed to remove destination:",
+                response.statusText
+              );
+            }
+          })
+          .catch((error) => {
+            console.error("Error removing destination:", error);
+          });
       }
-      const requestOptions = {
-        method: "DELETE",
-      };
-      fetch(
-        `http://localhost:8080/users/${userId}/destinations/${destination}`,
-        requestOptions
-      )
-        .then((response) => {
-          if (response.status === 204) {
-            console.log("Destination removed successfully");
-            this.loadUserDestinations(userId);
-            fetch(`http://localhost:8080/users/${userId}/destinations`)
-              .then((response) => response.json())
-              .then((destinations) => {
-                this.destinations = destinations;
-              });
-          } else {
-            console.error("Failed to remove destination:", response.statusText);
-          }
-        })
-        .catch((error) => {
-          console.error("Error removing destination:", error);
-        });
     },
 
     addInterest: function () {
