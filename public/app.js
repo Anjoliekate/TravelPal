@@ -16,18 +16,39 @@ Vue.createApp({
       ],
       destinations: [],
       interests: [],
-      currentUser: {
-        name: "",
-        birthday: "",
-        email: "",
-        password: "",
-      },
       errorMessages: {},
+      newUserName: "",
+      newUserBirthday: "",
+      newUserEmail: "",
+      newUserPassword: "",
+      newDestination: "",
+      newInterest: "",
+      returningUserEmail: "",
+      returningUserPassword: "",
+      userInfo: {},
     };
   },
 
   // object with more keys inside it.
   methods: {
+    loadUserInfo: function () {
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        console.error("User ID not found in local storage");
+        return;
+      }
+      fetch(`/users/${userId}`)
+        .then((response) => response.json())
+        .then((userData) => {
+          console.log("User Info:", userData);
+          // Update user info in Vue data
+          this.userInfo = userData;
+        })
+        .catch((error) => {
+          console.error("Error fetching user info:", error);
+        });
+    },
+
     validateReturningUserInputs: function () {
       this.errorMessages = {};
       if (
@@ -120,6 +141,7 @@ Vue.createApp({
             response.json().then((data) => {
               console.log("User ID:", data.userId);
               localStorage.setItem("userId", data.userId);
+              this.loadUserInfo();
               fetch(`/users/${data.userId}/destinations`)
                 .then((response) => response.json())
                 .then((destinations) => {
@@ -131,7 +153,6 @@ Vue.createApp({
                   this.interests = interests;
                 });
             });
-            this.loadUserInfo();
             this.displayHomePage();
           } else {
             this.errorMessages.login = "Invalid email or password";
@@ -282,25 +303,6 @@ Vue.createApp({
         });
     },
 
-    loadUserInfo: function () {
-      const userId = localStorage.getItem("userId");
-      if (!userId) {
-        console.error("User ID not found in local storage");
-        return;
-      }
-      fetch(`/users/${userId}`)
-        .then((response) => response.json())
-        .then((userInfo) => {
-          this.currentUser.name = userInfo.name;
-          this.currentUser.birthday = userInfo.birthday;
-          this.currentUser.email = userInfo.email;
-          this.currentUser.password = userInfo.password;
-        })
-        .catch((error) => {
-          console.error("Error loading user info:", error);
-        });
-    },
-
     // remove an interest for a user
     removeInterest: function (interest) {
       if (confirm("Are you sure you want to remove this interest?")) {
@@ -335,6 +337,7 @@ Vue.createApp({
     errorMessageForField: function (fieldName) {
       return this.errorMessages[fieldName];
     },
+
     errorStyleForField: function (fieldName) {
       if (this.errorMessageForField(fieldName)) {
         return { border: "1px solid red" };
@@ -372,5 +375,6 @@ Vue.createApp({
   // v-on establishes an event listener its a directive, data binding, rendering
   created: function () {
     console.log("Hello, vue.");
+    this.loadUserInfo();
   },
 }).mount("#app");

@@ -25,7 +25,7 @@
           </div>
           <!-- vmodel only for input when data is being sent back to code-->
           <div id="new-user-inputs">
-            <p>Welcome! Sign up to start your journey.</p>
+            <p style="padding-bottom: -40px"><div id="question" style="padding-bottom: 40px;"> Welcome! Sign up to start your journey.</div></p>
 
             <div id="input_box">
               <label>
@@ -70,12 +70,12 @@
             <br />
             <button v-on:click="addUser">Sign Up</button>
             <br />
-            <p style="margin-bottom: -15px">Already have an account?</p>
+            <p style="margin-bottom: 30px"><div id="question"> Already have an account?</div></p>
             <br /><br />
             <button v-on:click="displayLogin">Log In</button>
           </div>
           <div id="returning-user-inputs">
-            <p>Welcome back! Login to continue your journey.</p>
+            <p style="padding-bottom: -40px"><div id="question" style="padding-bottom: 40px;">Welcome back! Login to continue your journey.</div></p>
             <div id="input_box">
               <label>
                 Email:
@@ -106,23 +106,28 @@
       <div id="homePage">
         <div id="HomeBox">
           <div class="row">
-            <div class="title"><h1>TravelPal</h1></div>
+            <div class="title-home"><h1>TravelPal</h1></div>
           </div>
           <div class="row">
-            <div id="userInfo">
-              <img src="user.JPG" alt="user" id="profile-pic" />
-              <br />
-              <br />
-              <h2>User Information</h2>
-              <p>Name: {{ currentUser.name }}</p>
-              <p>Email: {{ currentUser.email }}</p>
-              <p>Birthday: {{ currentUser.birthday }}</p>
-              <p>Password: {{ currentUser.password }}</p>
+            <div id="info-box">
+              <div id="userInfo">
+                <br />
+                <br />
+                <img src="user.JPG" alt="user" id="profile-pic" />
+                <br />
+                <br />
+                <h2 style="display:grid;justify-content: center;">User Info:</h2>
+                <p>Name: {{ userInfo.name }}</p>
+                <p>Email: {{ userInfo.email }}</p>
+                <p>Birthday: {{ userInfo.birthday }}</p>
+                <p>Password: {{ userInfo.password }}</p>
+                <br />
+              </div>
             </div>
             <div id="new-destination-input">
               <br />
               <br />
-              <p>Where would you like to go next?</p>
+              <p><div id="question">Where would you like to go next?</div></p>
               <br />
               <div id="input_box">
                 <label>
@@ -153,7 +158,7 @@
             <div id="new-interest-input">
               <br />
               <br />
-              <p>What are you interested in?</p>
+              <p><div id="question">What are you interested in?</div></p>
               <br />
               <div id="input_box">
                 <label>

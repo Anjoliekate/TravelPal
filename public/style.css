@@ -71,7 +71,7 @@ p {
   text-align: center;
 }
 .hero-image {
-  height: 80vh;
+  height: 70vh;
   border-radius: 20px;
 }
 
@@ -106,10 +106,7 @@ p {
 }
 
 #HomeBox {
-  padding-left: 20px;
-  padding-right: 20px;
-  padding-top: 30px;
-  padding-bottom: 20px;
+  padding-right: 50px;
   border: 3px solid rgb(19, 53, 77);
   background-color: white;
   border-radius: 20px;
@@ -125,6 +122,7 @@ h1 {
 
 #homePage {
   display: none;
+  padding-top: 50px;
 }
 h1 {
   text-align: center;
@@ -141,17 +139,32 @@ h1 {
 
 #new-destination-input,
 #new-interest-input {
-  padding: 50px;
-  width: 45%;
+  margin-top: -25px;
+  margin-left: 100px;
+  width: 70%;
   border-radius: 5px;
   margin-bottom: 10px;
 }
+
 #userInfo {
-  margin-top: -100px;
-  padding: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 30px;
+  padding-right: 30px;
+  border: 3px solid rgb(19, 53, 77);
+  background-color: rgb(204, 205, 206);
+  border-radius: 20px;
+  margin-top: -146px;
+  margin-left: -3px;
+  height: 65vh;
 }
 #userInfo p {
   text-align: left;
+  padding: 10px;
+  border: 1px solid rgb(19, 53, 77);
+  background-color: rgb(255, 255, 255);
+  border-radius: 10px;
+  margin: 10px;
 }
 
 #profile-pic {
@@ -161,4 +174,19 @@ h1 {
   margin: 0 auto;
   display: block;
   object-fit: cover;
+}
+#profile-pic img {
+  border-color: 1px solid black;
+}
+
+.title-home {
+  padding-left: 300px;
+}
+
+#question {
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  color: rgb(19, 53, 77);
+  font-size: 17px;
+  display: grid;
+  justify-content: center;
 }

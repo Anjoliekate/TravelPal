@@ -22,7 +22,7 @@ app.get("/users", function (request, response) {
 app.get("/users/:id", function (request, response) {
   model.User.findById(request.params.id).then((user) => {
     response.set("Access-Control-Allow-Origin", "*");
-    response.json(user.name, user.birthday, user.email, user.password);
+    response.json(user);
   });
 });
 
