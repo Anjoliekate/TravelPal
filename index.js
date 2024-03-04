@@ -2,6 +2,7 @@ const express = require("express");
 const model = require("./model");
 const cors = require("cors");
 const app = express();
+const mongoose = require("mongoose");
 
 // extended allows you to send different structures of URL encoded data
 app.use(express.urlencoded({ extended: false }));
@@ -50,9 +51,26 @@ app.post("/users", function (request, response) {
     email: request.body.email,
     password: request.body.password,
   });
-  newUser.save().then(() => {
-    response.set("Access-Control-Allow-Origin", "*");
-    response.status(201).send("User added");
+
+  model.User.findOne({ email: request.body.email }).then((user) => {
+    if (user) {
+      response.status(400).json({ error: "Email already exists" });
+    } else {
+      newUser
+        .save()
+        .then(() => {
+          response.set("Access-Control-Allow-Origin", "*");
+          response.status(201).send("User added");
+        })
+        .catch((error) => {
+          console.error("Error adding user:", error);
+          if (error instanceof mongoose.Error.ValidationError) {
+            response.status(400).json({ error: error.message });
+          } else {
+            response.status(500).json({ error: "Internal server error" });
+          }
+        });
+    }
   });
 });
 
