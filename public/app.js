@@ -229,6 +229,7 @@ Vue.createApp({
               .then((response) => response.json())
               .then((destinations) => {
                 this.destinations = destinations;
+                this.newDestination = "";
               });
           } else {
             console.error("Failed to add destination:", response.statusText);
@@ -293,6 +294,7 @@ Vue.createApp({
               .then((response) => response.json())
               .then((interests) => {
                 this.interests = interests;
+                this.newInterest = "";
               });
           } else {
             console.error("Failed to add interest:", response.statusText);
