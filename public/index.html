@@ -2,16 +2,19 @@
 <html>
   <head>
     <link rel="stylesheet" href="style.css" />
-    <link href='https://fonts.googleapis.com/css?family=Knewave' rel='stylesheet'>
+    <link
+      href="https://fonts.googleapis.com/css?family=Knewave"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div id="app">
       <!-- this is my Vue app-->
       <div id="LoginBox">
         <div id="loginImage">
-          <img src="travel.jpg" alt="TravelPal" class="hero-image"/>
+          <img src="travel.jpg" alt="TravelPal" class="hero-image" />
         </div>
-       <div id="login">
+        <div id="login">
           <div class="title"><h1>TravelPal</h1></div>
 
           <div v-if="validationErrors">
@@ -38,10 +41,7 @@
             <div id="input_box">
               <label>
                 Birthday:
-                <input
-                  type="date"
-                  v-model="newUserBirthday"
-                />
+                <input type="date" v-model="newUserBirthday" />
               </label>
             </div>
             <br />
@@ -69,18 +69,12 @@
             <br />
             <br />
             <button v-on:click="addUser">Sign Up</button>
-            <br>
-            <p style="margin-bottom: -15px;">Already have an account?</p>
-            <br><br>
+            <br />
+            <p style="margin-bottom: -15px">Already have an account?</p>
+            <br /><br />
             <button v-on:click="displayLogin">Log In</button>
           </div>
           <div id="returning-user-inputs">
-            <div v-if="validationErrors">
-              Please correct the following error(s):
-              <ul>
-                <li v-for="error in errorMessages">{{error}}</li>
-              </ul>
-            </div>
             <p>Welcome back! Login to continue your journey.</p>
             <div id="input_box">
               <label>
@@ -107,43 +101,29 @@
             <br />
             <button v-on:click="loginUser">Log In</button>
           </div>
-          <div id="new-destination-input">
-            <div id="input_box">
-              <label>
-                Destinations:
-                <div class="destination-list">
-                  <ul>
-                    <li v-for="destination in destinations">
-                      <h3>
-                        <strong>{{user.destination}}</strong>
-                        <br />
-                      </h3>
-                    </li>
-                  </ul>
-                </div>
-                <input
-                  type="text"
-                  placeholder="Enter a destination"
-                  v-model="newDestination"
-                />
-              </label>
+        </div>
+      </div>
+      <div id="homePage">
+        <div id="HomeBox">
+          <div class="row">
+            <div class="title"><h1>TravelPal</h1></div>
+          </div>
+          <div class="row">
+            <div id="userInfo">
+              <h2>User Information</h2>
+              <p>Name: {{ currentUser.name }}</p>
+              <p>Email: {{ currentUser.email }}</p>
+              <p>Birthday: {{ currentUser.birthday }}</p>
+              <p>Password: {{ currentUser.password }}</p>
             </div>
-            <br />
-            <br />
             <div id="new-destination-input">
+              <br />
+              <br />
+              <p>Where would you like to go next?</p>
+              <br />
               <div id="input_box">
                 <label>
-                  Interests:
-                  <div class="interests-list">
-                    <ul>
-                      <li v-for="interest in interests">
-                        <h3>
-                          <strong>{{user.interest}}</strong>
-                          <br />
-                        </h3>
-                      </li>
-                    </ul>
-                  </div>
+                  Destination:
                   <input
                     type="text"
                     placeholder="Enter a destination"
@@ -151,9 +131,52 @@
                   />
                 </label>
               </div>
-            <button v-on:click="addDestination">add destination</button>
+              <br />
+              <br />
+              <button id="add" v-on:click="addDestination">
+                Add Destination
+              </button>
+              <div id="destinations">
+                <ul>
+                  <li id="list-item" v-for="destination in destinations">
+                    {{ destination }}
+                    <button v-on:click="removeDestination(destination)">
+                      <img id="trash" src="trash.png" alt="delete" />
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div id="new-interest-input">
+              <br />
+              <br />
+              <p>What are you interested in?</p>
+              <br />
+              <div id="input_box">
+                <label>
+                  Interest:
+                  <input
+                    type="text"
+                    placeholder="Enter an interest"
+                    v-model="newInterest"
+                  />
+                </label>
+              </div>
+              <br />
+              <br />
+              <button id="add" v-on:click="addInterest">Add Interest</button>
+              <div id="interests">
+                <ul>
+                  <li id="list-item" v-for="interest in interests">
+                    {{ interest }}
+                    <button v-on:click="removeInterest(interest)">
+                      <img id="trash" src="trash.png" alt="delete" />
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
-          <div id="destinations">
         </div>
       </div>
     </div>

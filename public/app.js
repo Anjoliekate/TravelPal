@@ -14,6 +14,14 @@ Vue.createApp({
           interests: ["painting", "coffee", "hiking"],
         },
       ],
+      destinations: [],
+      interests: [],
+      currentUser: {
+        name: "",
+        birthday: "",
+        email: "",
+        password: "",
+      },
       errorMessages: {},
     };
   },
@@ -22,21 +30,19 @@ Vue.createApp({
   methods: {
     validateReturningUserInputs: function () {
       this.errorMessages = {};
-      if (!this.isEmailValid(this.newUserEmail)) {
-        this.errorMessages["user.email"] = "Email is invalid.";
-      }
-
       if (
-        this.newUserPassword == undefined ||
-        this.newUserPassword.length < 8
+        this.returningUserEmail == undefined ||
+        this.returningUserEmail == ""
       ) {
-        this.errorMessages["user.password"] =
-          "Password must be at least 8 characters.";
+        this.errorMessages["user.email"] = "Email is required.";
       }
-
-      console.log(Object.keys(this.errorMessages).length);
-
-      return Object.keys(this.errorMessages).length == 0;
+      if (
+        this.returningUserPassword == undefined ||
+        this.returningUserPassword == ""
+      ) {
+        this.errorMessages["user.password"] = "Password is required.";
+      }
+      return;
     },
 
     isNewUserValid: function () {
@@ -98,7 +104,6 @@ Vue.createApp({
     },
 
     loginUser: function () {
-      if (!this.validateReturningUserInputs()) return;
       var data = "email=" + encodeURIComponent(this.returningUserEmail);
       data += "&password=" + encodeURIComponent(this.returningUserPassword);
       console.log("data: ", data);
@@ -112,17 +117,28 @@ Vue.createApp({
       fetch("/login", requestOptions)
         .then((response) => {
           if (response.status === 200) {
-            var returningUserHomePage = document.getElementById(
-              "returning-user-inputs"
-            );
-            returningUserHomePage.style = "display:none";
-            var userHomePage = document.getElementById("new-destination-input");
-            userHomePage.style = "display:grid";
             response.json().then((data) => {
               console.log("User ID:", data.userId);
-              this.loadUserDestinations(data.userId);
-              this.loadUserInterests(data.userId);
+              localStorage.setItem("userId", data.userId);
+              fetch(`/users/${data.userId}/destinations`)
+                .then((response) => response.json())
+                .then((destinations) => {
+                  this.destinations = destinations;
+                });
+              fetch(`/users/${data.userId}/interests`)
+                .then((response) => response.json())
+                .then((interests) => {
+                  this.interests = interests;
+                });
             });
+            (this.currentUser = {
+              name: "",
+              birthday: "",
+              email: "",
+              password: "",
+            }),
+              this.loadUserInfo();
+            this.displayHomePage();
           } else {
             this.errorMessages.login = "Invalid email or password";
           }
@@ -152,6 +168,7 @@ Vue.createApp({
         }
       });
     },
+
     loadUserDestinations: function (userId) {
       fetch(`/users/${userId}/destinations`)
         .then((response) => response.json())
@@ -174,6 +191,151 @@ Vue.createApp({
         });
     },
 
+    addDestination: function () {
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        console.error("User ID not found in local storage");
+        return;
+      }
+      const data = "destination=" + encodeURIComponent(this.newDestination);
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: data,
+      };
+      fetch(`/users/${userId}/destinations`, requestOptions)
+        .then((response) => {
+          if (response.status === 201) {
+            console.log("Destination added successfully");
+            this.loadUserDestinations(userId);
+            fetch(`/users/${userId}/destinations`)
+              .then((response) => response.json())
+              .then((destinations) => {
+                this.destinations = destinations;
+              });
+          } else {
+            console.error("Failed to add destination:", response.statusText);
+          }
+        })
+        .catch((error) => {
+          console.error("Error adding destination:", error);
+        });
+    },
+
+    removeDestination: function (destination) {
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        console.error("User ID not found in local storage");
+        return;
+      }
+      const requestOptions = {
+        method: "DELETE",
+      };
+      fetch(
+        `http://localhost:8080/users/${userId}/destinations/${destination}`,
+        requestOptions
+      )
+        .then((response) => {
+          if (response.status === 204) {
+            console.log("Destination removed successfully");
+            this.loadUserDestinations(userId);
+            fetch(`http://localhost:8080/users/${userId}/destinations`)
+              .then((response) => response.json())
+              .then((destinations) => {
+                this.destinations = destinations;
+              });
+          } else {
+            console.error("Failed to remove destination:", response.statusText);
+          }
+        })
+        .catch((error) => {
+          console.error("Error removing destination:", error);
+        });
+    },
+
+    addInterest: function () {
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        console.error("User ID not found in local storage");
+        return;
+      }
+      const data = "interest=" + encodeURIComponent(this.newInterest);
+      const requestOptions = {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: data,
+      };
+      fetch(`/users/${userId}/interests`, requestOptions)
+        .then((response) => {
+          if (response.status === 201) {
+            console.log("Interest added successfully");
+            this.loadUserInterests(userId);
+            fetch(`/users/${userId}/interests`)
+              .then((response) => response.json())
+              .then((interests) => {
+                this.interests = interests;
+              });
+          } else {
+            console.error("Failed to add interest:", response.statusText);
+          }
+        })
+        .catch((error) => {
+          console.error("Error adding interest:", error);
+        });
+    },
+
+    loadUserInfo: function () {
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        console.error("User ID not found in local storage");
+        return;
+      }
+      fetch(`/users/${userId}`)
+        .then((response) => response.json())
+        .then((userInfo) => {
+          this.currentUser.name = userInfo.name;
+          this.currentUser.birthday = userInfo.birthday;
+          this.currentUser.email = userInfo.email;
+          this.currentUser.password = userInfo.password;
+        })
+        .catch((error) => {
+          console.error("Error loading user info:", error);
+        });
+    },
+
+    // remove an interest for a user
+    removeInterest: function (interest) {
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        console.error("User ID not found in local storage");
+        return;
+      }
+      const requestOptions = {
+        method: "DELETE",
+      };
+      fetch(`/users/${userId}/interests/${interest}`, requestOptions)
+        .then((response) => {
+          if (response.status === 204) {
+            console.log("Interest removed successfully");
+            this.loadUserInterests(userId);
+            fetch(`/users/${userId}/interests`)
+              .then((response) => response.json())
+              .then((interests) => {
+                this.interests = interests;
+              });
+          } else {
+            console.error("Failed to remove interest:", response.statusText);
+          }
+        })
+        .catch((error) => {
+          console.error("Error removing interest:", error);
+        });
+    },
+
     errorMessageForField: function (fieldName) {
       return this.errorMessages[fieldName];
     },
@@ -184,6 +346,14 @@ Vue.createApp({
         return {};
       }
     },
+
+    displayHomePage: function () {
+      var returningUserHomePage = document.getElementById("LoginBox");
+      returningUserHomePage.style = "display:none";
+      var homePage = document.getElementById("homePage");
+      homePage.style = "display:grid";
+    },
+
     displayLogin: function () {
       var newUserHomePage = document.getElementById("new-user-inputs");
       newUserHomePage.style = "display:none";
