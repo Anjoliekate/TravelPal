@@ -26,6 +26,9 @@ Vue.createApp({
       returningUserEmail: "",
       returningUserPassword: "",
       userInfo: {},
+      userInfoName: "",
+      userInfoBirthday: "",
+      userInfoEmail: "",
     };
   },
 
@@ -63,7 +66,7 @@ Vue.createApp({
       ) {
         this.errorMessages["user.password"] = "Password is required.";
       }
-      return;
+      return Object.keys(this.errorMessages).length == 0;
     },
 
     isNewUserValid: function () {
@@ -125,6 +128,7 @@ Vue.createApp({
     },
 
     loginUser: function () {
+      if (!this.validateReturningUserInputs()) return;
       var data = "email=" + encodeURIComponent(this.returningUserEmail);
       data += "&password=" + encodeURIComponent(this.returningUserPassword);
       console.log("data: ", data);
@@ -203,6 +207,78 @@ Vue.createApp({
         })
         .catch((error) => {
           console.error("Error fetching interests:", error);
+        });
+    },
+
+    displayInput: function () {
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        console.error("User ID not found in local storage");
+        return;
+      }
+      var newUserHomePage = document.getElementById("user-info");
+      newUserHomePage.style = "display:none";
+      var returningUserHomePage = document.getElementById("edit-info");
+      returningUserHomePage.style = "display:grid";
+      fetch(`/users/${userId}`)
+        .then((response) => response.json())
+        .then((userData) => {
+          console.log("User Info:", userData);
+          this.userInfo = userData;
+          this.userInfoName = this.userInfo.name;
+          this.userInfoBirthday = this.userInfo.birthday;
+          this.userInfoEmail = this.userInfo.email;
+
+          document.getElementById("nameInput").value = this.userInfoName;
+          document.getElementById("birthdayInput").value =
+            this.userInfoBirthday;
+          document.getElementById("emailInput").value = this.userInfoEmail;
+        });
+    },
+
+    updateUserInformation: function () {
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        console.error("User ID not found in local storage");
+        return;
+      }
+      const userData = {
+        name: this.userInfoName,
+        birthday: this.userInfoBirthday,
+        email: this.userInfoEmail,
+      };
+      console.log("userData: ", userData);
+      fetch(`/users/${userId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(userData),
+      })
+        .then((response) => {
+          if (response.ok) {
+            console.log("User information updated successfully");
+            this.userInfo.name = userData.name;
+            this.userInfo.birthday = userData.birthday;
+            this.userInfo.email = userData.email;
+
+            this.userInfoName = "";
+            this.userInfoBirthday = "";
+            this.userInfoEmail = "";
+
+            var newUserHomePage = document.getElementById("edit-info");
+            newUserHomePage.style = "display:none";
+            var returningUserHomePage = document.getElementById("user-info");
+            returningUserHomePage.style = "display:grid";
+          } else {
+            console.error(
+              "Failed to update user information:",
+              response.statusText
+            );
+          }
+        })
+        .catch((error) => {
+          console.error("Error updating user information:", error);
         });
     },
 
@@ -367,6 +443,26 @@ Vue.createApp({
         "returning-user-inputs"
       );
       returningUserHomePage.style = "display:grid";
+      this.returningUserEmail = "";
+      this.returningUserPassword = "";
+    },
+
+    signOut: function () {
+      var homePage = document.getElementById("homePage");
+      homePage.style = "display:none";
+      var newUserHomePage = document.getElementById("new-user-inputs");
+      newUserHomePage.style = "display: grid";
+      var returningUserHomePage = document.getElementById(
+        "returning-user-inputs"
+      );
+      returningUserHomePage.style = "display:none";
+      var returningUserHomePage = document.getElementById("LoginBox");
+      returningUserHomePage.style = "display:inline-flex";
+
+      this.newUserPassword = "";
+      this.newUserEmail = "";
+      this.newUserName = "";
+      this.newUserBirthday = "";
     },
   },
 

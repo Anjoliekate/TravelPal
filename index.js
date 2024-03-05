@@ -2,6 +2,7 @@ const express = require("express");
 const model = require("./model");
 const cors = require("cors");
 const app = express();
+app.use(express.json());
 const mongoose = require("mongoose");
 
 // extended allows you to send different structures of URL encoded data
@@ -154,6 +155,31 @@ app.delete("/users/:id/interests/:interest", function (request, response) {
       response.status(204).send("Interest removed");
     });
   });
+});
+
+// update a users info
+app.put("/users/:id", function (request, response) {
+  const userId = request.params.id;
+  const userData = request.body;
+  console.log("userData: ", userData.name, userData.birthday, userData.email);
+  model.User.findByIdAndUpdate(userId, userData, { new: true })
+    .then((user) => {
+      user.save().then(() => {
+        if (!user) {
+          return response.status(404).send("User not found");
+        }
+        user.name = userData.name;
+        user.birthday = userData.birthday;
+        user.email = userData.email;
+        console.log("user: ", user);
+        response.set("Access-Control-Allow-Origin", "*");
+        response.status(201).send("User updated successfully");
+      });
+    })
+    .catch((error) => {
+      console.error("Error updating user:", error);
+      response.status(500).send("Internal server error");
+    });
 });
 
 app.listen(8080, function () {

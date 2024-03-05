@@ -8,26 +8,18 @@ https://travel-pal-api.onrender.com/
 High-fidelity prototype:
 https://www.figma.com/file/OE35xQiVS06nt9klhVgwWJ/Untitled?type=design&node-id=0-1&mode=design
 
-## Resources
-
-**Destinations**
-
-Attributes:
-
-- destination (string)
-
-**Interests**
-Attributes:
-
-- interest (string)
+## Resource
 
 **Users**
+
 Attributes:
 
 - name (string)
 - email (string)
 - birthday (string)
 - password (string)
+- destinations (array)
+- interests (array)
 
 ## Schema
 
@@ -44,13 +36,14 @@ interests Array));
 
 ## REST Endpoints
 
-| Name                       | Method | Path                                     |
-| -------------------------- | ------ | ---------------------------------------- |
-| Retrieve users collection  | GET    | /users                                   |
-| Retrieve user              | GET    | /users/_\<id\>_                          |
-| Create user                | POST   | /users                                   |
-| Login User                 | POST   | /login                                   |
-| Delete destinations member | DELETE | /users/_\<id\>_/destinations/destination |
-| Delete interests member    | DELETE | /users/_\<id\>_/interests/interest       |
-| Create destinations member | DELETE | /users/_\<id\>_/destinations             |
-| Create interests member    | POST   | /users/_\<id\>_/interests                |
+| Name                      | Method | Path                                     |
+| ------------------------- | ------ | ---------------------------------------- |
+| Retrieve users collection | GET    | /users                                   |
+| Retrieve user             | GET    | /users/_\<id\>_                          |
+| Create user               | POST   | /users                                   |
+| Login User                | POST   | /login                                   |
+| Delete destination        | DELETE | /users/_\<id\>_/destinations/destination |
+| Delete interest           | DELETE | /users/_\<id\>_/interests/interest       |
+| Create destination        | DELETE | /users/_\<id\>_/destinations             |
+| Create interest           | POST   | /users/_\<id\>_/interests                |
+| Update User               | PUT    | /users/_\<id\>_                          |
