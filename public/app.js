@@ -331,7 +331,7 @@ Vue.createApp({
             if (response.status === 204) {
               console.log("Destination removed successfully");
               this.loadUserDestinations(userId);
-              fetch(`http://localhost:8080/users/${userId}/destinations`)
+              fetch(`/users/${userId}/destinations`)
                 .then((response) => response.json())
                 .then((destinations) => {
                   this.destinations = destinations;
