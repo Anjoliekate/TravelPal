@@ -317,7 +317,7 @@ Vue.createApp({
     },
 
     removeDestination: function (destination) {
-      if (confirm("Are you sure you want to remove this interest?")) {
+      if (confirm("Are you sure you want to remove this destination?")) {
         const userId = localStorage.getItem("userId");
         if (!userId) {
           console.error("User ID not found in local storage");
@@ -326,10 +326,7 @@ Vue.createApp({
         const requestOptions = {
           method: "DELETE",
         };
-        fetch(
-          `http://localhost:8080/users/${userId}/destinations/${destination}`,
-          requestOptions
-        )
+        fetch(`/users/${userId}/destinations/${destination}`, requestOptions)
           .then((response) => {
             if (response.status === 204) {
               console.log("Destination removed successfully");
@@ -437,6 +434,7 @@ Vue.createApp({
     },
 
     displayLogin: function () {
+      errorMessages = {};
       var newUserHomePage = document.getElementById("new-user-inputs");
       newUserHomePage.style = "display:none";
       var returningUserHomePage = document.getElementById(
