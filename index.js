@@ -11,23 +11,23 @@ const bcrypt = require("bcrypt");
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static("public"));
 app.use(cors());
-// app.use(
-//   session({
-//     secret: "oijxlvkcoxizcvoihdzopojnfldosv",
-//     saveUninitialized: true,
-//     resave: false,
-//   })
-// );
-
 app.use(
   session({
     secret: "oijxlvkcoxizcvoihdzopojnfldosv",
     saveUninitialized: true,
     resave: false,
-    cookie: { secure: true },
-    sameSite: "none",
   })
 );
+
+// app.use(
+//   session({
+//     secret: "oijxlvkcoxizcvoihdzopojnfldosv",
+//     saveUninitialized: true,
+//     resave: false,
+//     cookie: { secure: true },
+//     sameSite: "none",
+//   })
+// );
 
 //middlewares are gatekeeper of whether or not request is authorized
 //*
