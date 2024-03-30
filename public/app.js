@@ -34,13 +34,8 @@ Vue.createApp({
 
   // object with more keys inside it.
   methods: {
-    loadUserInfo: function () {
-      const userId = localStorage.getItem("userId");
-      if (!userId) {
-        console.error("User ID not found in local storage");
-        return;
-      }
-      fetch(`/users/${userId}`)
+    loadUserInfo: function (userId) {
+      fetch(`users/${userId}`)
         .then((response) => response.json())
         .then((userData) => {
           console.log("User Info:", userData);
@@ -113,7 +108,7 @@ Vue.createApp({
         },
         body: data,
       };
-      fetch("/users", requestOptions).then((response) => {
+      fetch("users/", requestOptions).then((response) => {
         if (response.status == 201) {
           this.loadUsersCollection();
           console.log("user added.");
@@ -139,19 +134,19 @@ Vue.createApp({
         },
         body: data,
       };
-      fetch("/login", requestOptions)
+      fetch("login/", requestOptions)
         .then((response) => {
           if (response.status === 200) {
             response.json().then((data) => {
               console.log("User ID:", data.userId);
               localStorage.setItem("userId", data.userId);
-              this.loadUserInfo();
-              fetch(`/users/${data.userId}/destinations`)
+              this.loadUserInfo(data.userId);
+              fetch(`users/${data.userId}/destinations`)
                 .then((response) => response.json())
                 .then((destinations) => {
                   this.destinations = destinations;
                 });
-              fetch(`/users/${data.userId}/interests`)
+              fetch(`users/${data.userId}/interests`)
                 .then((response) => response.json())
                 .then((interests) => {
                   this.interests = interests;
@@ -176,7 +171,7 @@ Vue.createApp({
     },
 
     loadUsersCollection: function () {
-      fetch("/users").then((response) => {
+      fetch("users/").then((response) => {
         // contains the status code, headers, and body etc.
         if (response.status == 200) {
           response.json().then((TravelsFromServer) => {
@@ -189,7 +184,7 @@ Vue.createApp({
     },
 
     loadUserDestinations: function (userId) {
-      fetch(`/users/${userId}/destinations`)
+      fetch(`users/${userId}/destinations`)
         .then((response) => response.json())
         .then((destinations) => {
           console.log("User Destinations:", destinations);
@@ -200,7 +195,7 @@ Vue.createApp({
     },
 
     loadUserInterests: function (userId) {
-      fetch(`/users/${userId}/interests`)
+      fetch(`users/${userId}/interests`)
         .then((response) => response.json())
         .then((interests) => {
           console.log("User Interests:", interests);
@@ -220,7 +215,7 @@ Vue.createApp({
       newUserHomePage.style = "display:none";
       var returningUserHomePage = document.getElementById("edit-info");
       returningUserHomePage.style = "display:grid";
-      fetch(`/users/${userId}`)
+      fetch(`users/${userId}`)
         .then((response) => response.json())
         .then((userData) => {
           console.log("User Info:", userData);
@@ -248,7 +243,7 @@ Vue.createApp({
         email: this.userInfoEmail,
       };
       console.log("userData: ", userData);
-      fetch(`/users/${userId}`, {
+      fetch(`users/${userId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -296,12 +291,12 @@ Vue.createApp({
         },
         body: data,
       };
-      fetch(`/users/${userId}/destinations`, requestOptions)
+      fetch(`users/${userId}/destinations`, requestOptions)
         .then((response) => {
           if (response.status === 201) {
             console.log("Destination added successfully");
             this.loadUserDestinations(userId);
-            fetch(`/users/${userId}/destinations`)
+            fetch(`users/${userId}/destinations`)
               .then((response) => response.json())
               .then((destinations) => {
                 this.destinations = destinations;
@@ -326,12 +321,12 @@ Vue.createApp({
         const requestOptions = {
           method: "DELETE",
         };
-        fetch(`/users/${userId}/destinations/${destination}`, requestOptions)
+        fetch(`users/${userId}/destinations/${destination}`, requestOptions)
           .then((response) => {
             if (response.status === 204) {
               console.log("Destination removed successfully");
               this.loadUserDestinations(userId);
-              fetch(`/users/${userId}/destinations`)
+              fetch(`users/${userId}/destinations`)
                 .then((response) => response.json())
                 .then((destinations) => {
                   this.destinations = destinations;
@@ -363,12 +358,12 @@ Vue.createApp({
         },
         body: data,
       };
-      fetch(`/users/${userId}/interests`, requestOptions)
+      fetch(`users/${userId}/interests`, requestOptions)
         .then((response) => {
           if (response.status === 201) {
             console.log("Interest added successfully");
             this.loadUserInterests(userId);
-            fetch(`/users/${userId}/interests`)
+            fetch(`users/${userId}/interests`)
               .then((response) => response.json())
               .then((interests) => {
                 this.interests = interests;
@@ -394,12 +389,12 @@ Vue.createApp({
         const requestOptions = {
           method: "DELETE",
         };
-        fetch(`/users/${userId}/interests/${interest}`, requestOptions)
+        fetch(`users/${userId}/interests/${interest}`, requestOptions)
           .then((response) => {
             if (response.status === 204) {
               console.log("Interest removed successfully");
               this.loadUserInterests(userId);
-              fetch(`/users/${userId}/interests`)
+              fetch(`users/${userId}/interests`)
                 .then((response) => response.json())
                 .then((interests) => {
                   this.interests = interests;
@@ -476,6 +471,5 @@ Vue.createApp({
   // v-on establishes an event listener its a directive, data binding, rendering
   created: function () {
     console.log("Hello, vue.");
-    this.loadUserInfo();
   },
 }).mount("#app");

@@ -4,14 +4,62 @@ const cors = require("cors");
 const app = express();
 app.use(express.json());
 const mongoose = require("mongoose");
+const session = require("express-session");
+const bcrypt = require("bcrypt");
 
 // extended allows you to send different structures of URL encoded data
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static("public"));
-
 app.use(cors());
+app.use(
+  session({
+    secret: "oijxlvkcoxizcvoihdzopojnfldosv",
+    saveUninitialized: true,
+    resave: false,
+  })
+);
+
+//
+// app.use(
+//   session({
+//     secret: "oijxlvkcoxizcvoihdzopojnfldosv",
+//     saveUninitialized: true,
+//     resave: false,
+//     cookie: { secure: true }, fixes chrome breaks postman
+//     sameSite: "none",
+//   })
+// );
+
+//middlewares are gatekeeper of whether or not request is authorized
+//*
+function authorizeRequest(adminOnly) {
+  return function (request, response, next) {
+    if (request.session || request.session.userId) {
+      model.User.findOne({ _id: request.session.userId }).then(function (user) {
+        //!user.admin would cause admin to not be able to do non admin activities they are mutually exclusive
+        if (user) {
+          if (!adminOnly || user.admin) {
+            request.user = user;
+            next();
+          }
+        } else {
+          response
+            .status(401)
+            .send("zombie orphan session from old user, user doesn't exist");
+        }
+      });
+    } else {
+      response
+        .status(401)
+        .send("session or session with this user does not exist");
+    }
+  };
+}
+//called in each request authorizeRequest(false) means non admin action and true means admin only (put on my delete methods)
+//*
 
 // get all users
+//* add function name "authorizeRequest" to any requests that need to be authorized, except for signing up
 app.get("/users", function (request, response) {
   model.User.find().then((users) => {
     response.set("Access-Control-Allow-Origin", "*");
@@ -21,7 +69,7 @@ app.get("/users", function (request, response) {
 });
 
 //get a single user
-app.get("/users/:id", function (request, response) {
+app.get("/users/:id", authorizeRequest(false), function (request, response) {
   model.User.findById(request.params.id).then((user) => {
     response.set("Access-Control-Allow-Origin", "*");
     response.json(user);
@@ -29,20 +77,28 @@ app.get("/users/:id", function (request, response) {
 });
 
 //get destinations for a user
-app.get("/users/:id/destinations", function (request, response) {
-  model.User.findById(request.params.id).then((user) => {
-    response.set("Access-Control-Allow-Origin", "*");
-    response.json(user.destinations);
-  });
-});
+app.get(
+  "/users/:id/destinations",
+  authorizeRequest(false),
+  function (request, response) {
+    model.User.findById(request.params.id).then((user) => {
+      response.set("Access-Control-Allow-Origin", "*");
+      response.json(user.destinations);
+    });
+  }
+);
 
 //get interests for a user
-app.get("/users/:id/interests", function (request, response) {
-  model.User.findById(request.params.id).then((user) => {
-    response.set("Access-Control-Allow-Origin", "*");
-    response.json(user.interests);
-  });
-});
+app.get(
+  "/users/:id/interests",
+  authorizeRequest(false),
+  function (request, response) {
+    model.User.findById(request.params.id).then((user) => {
+      response.set("Access-Control-Allow-Origin", "*");
+      response.json(user.interests);
+    });
+  }
+);
 
 // add a user
 app.post("/users", function (request, response) {
@@ -51,90 +107,144 @@ app.post("/users", function (request, response) {
     birthday: request.body.birthday,
     email: request.body.email,
     password: request.body.password,
+    user: request.session.userId,
   });
-
-  model.User.findOne({ email: request.body.email }).then((user) => {
-    if (user) {
+  model.User.findOne({ email: request.body.email }).then((existingUser) => {
+    if (existingUser) {
       response.status(400).json({ error: "Email already exists" });
     } else {
-      newUser
-        .save()
-        .then(() => {
-          response.set("Access-Control-Allow-Origin", "*");
-          response.status(201).send("User added");
-        })
-        .catch((error) => {
-          console.error("Error adding user:", error);
-          if (error instanceof mongoose.Error.ValidationError) {
-            response.status(400).json({ error: error.message });
-          } else {
-            response.status(500).json({ error: "Internal server error" });
-          }
-        });
+      console.log("plain password:", newUser.password);
+      newUser.setEncryptedPassword(newUser.password).then(function () {
+        newUser
+          .save()
+          .then(() => {
+            response.status(201).send("Created");
+          })
+          .catch((error) => {
+            if (error.errors) {
+              var errorMessages = {};
+              for (var fieldName in error.errors) {
+                errorMessages[fieldName] = error.errors[fieldName].message;
+              }
+              response.status(422).json(errorMessages);
+            } else {
+              console.log("Unknown error creating user: ", error);
+              response.status(500).send("Unknown error creating user");
+            }
+          });
+      });
     }
   });
 });
 
-// check if user exists
 app.post("/login", function (request, response) {
   const email = request.body.email;
   const password = request.body.password;
-  //find the user by email in db
+
   model.User.findOne({ email: email }).then((user) => {
-    if (!user || user.password !== password) {
-      response.status(401).send("Invalid credentials");
+    if (!user) {
+      response.status(401).send("Invalid email or password");
     } else {
-      // authentication successful
-      response.set("Access-Control-Allow-Origin", "*");
-      response.status(200).json({ userId: user._id });
+      user.verifyEncryptedPassword(password).then((match) => {
+        if (match) {
+          request.session.userId = user._id;
+          response.status(200).json({ userId: user._id });
+        } else {
+          response.status(401).send("Invalid email or password");
+        }
+      });
+    }
+  });
+});
+
+//*
+// authentication: create session
+app.get("/session", authorizeRequest(false), function (request, response) {
+  response.status(401).send("Not Authenticated");
+});
+
+// authentication: delete session
+app.delete("/session", authorizeRequest(false), function (request, response) {
+  request.session.userId = null;
+  response.status(200).send("Logged out");
+});
+//*
+
+app.post("/session", authorizeRequest(false), function (request, response) {
+  // access users given credentials: request.body.email & request.body.plainPassword
+  model.User.findOne({ email: request.body.email }).then((user) => {
+    if (user) {
+      user
+        .verifyEncryptedPassword(request.body.plainPassword)
+        .then(function (match) {
+          if (match) {
+            //TODO: save the users ID into session data
+            //set to null if deleteing session
+            request.session.userId = user._id;
+            response.status(201).send("authenticated");
+          } else {
+            response.status(401).send("not authenticated");
+          }
+        });
+    } else {
+      response.status(401).send("not authenticated");
     }
   });
 });
 
 // add a destination for a user
-app.post("/users/:id/destinations", function (request, response) {
-  const userId = request.params.id;
-  const destination = request.body.destination;
-  model.User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        response.status(404).json({ error: "User not found" });
-      } else {
-        user.destinations.push(destination);
-        user.save().then(() => {
-          response.status(201).json({ message: "Destination added" });
-        });
-      }
-    })
-    .catch((error) => {
-      console.error("Error adding destination:", error);
-      response.status(500).json({ error: "Internal server error" });
-    });
-});
+app.post(
+  "/users/:id/destinations",
+  authorizeRequest(false),
+  function (request, response) {
+    const userId = request.params.id;
+    const destination = request.body.destination;
+    model.User.findById(userId)
+      .then((user) => {
+        if (!user) {
+          response.status(404).json({ error: "User not found" });
+        } else {
+          user.destinations.push(destination);
+          user.save().then(() => {
+            response.status(201).json({ message: "Destination added" });
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error adding destination:", error);
+        response.status(500).json({ error: "Internal server error" });
+      });
+  }
+);
 
-app.post("/users/:id/interests", function (request, response) {
-  const userId = request.params.id;
-  const interest = request.body.interest;
-  model.User.findById(userId)
-    .then((user) => {
-      if (!user) {
-        response.status(404).json({ error: "User not found" });
-      } else {
-        user.interests.push(interest);
-        user.save().then(() => {
-          response.status(201).json({ message: "Interest added" });
-        });
-      }
-    })
-    .catch((error) => {
-      console.error("Error adding interest:", error);
-      response.status(500).json({ error: "Internal server error" });
-    });
-});
+app.post(
+  "/users/:id/interests",
+  authorizeRequest(false),
+  function (request, response) {
+    const userId = request.params.id;
+    const interest = request.body.interest;
+    model.User.findById(userId)
+      .then((user) => {
+        if (!user) {
+          response.status(404).json({ error: "User not found" });
+        } else {
+          user.interests.push(interest);
+          user.save().then(() => {
+            response.status(201).json({ message: "Interest added" });
+          });
+        }
+      })
+      .catch((error) => {
+        console.error("Error adding interest:", error);
+        response.status(500).json({ error: "Internal server error" });
+      });
+  }
+);
 
 // remove a destination for a user
 app.delete(
   "/users/:id/destinations/:destination",
+  authorizeRequest(true),
   function (request, response) {
     model.User.findById(request.params.id).then((user) => {
       user.destinations.pull(request.params.destination);
@@ -147,15 +257,21 @@ app.delete(
 );
 
 // remove an interest for a user
-app.delete("/users/:id/interests/:interest", function (request, response) {
-  model.User.findById(request.params.id).then((user) => {
-    user.interests.pull(request.params.interest);
-    user.save().then(() => {
-      response.set("Access-Control-Allow-Origin", "*");
-      response.status(204).send("Interest removed");
+app.delete(
+  "/users/:id/interests/:interest",
+  authorizeRequest(true),
+  function (request, response) {
+    model.User.findById(request.params.id).then((user) => {
+      user.interests.pull({
+        interest: request.params.interest,
+      });
+      user.save().then(() => {
+        response.set("Access-Control-Allow-Origin", "*");
+        response.status(204).send("Interest removed");
+      });
     });
-  });
-});
+  }
+);
 
 // update a users info
 app.put("/users/:id", function (request, response) {
