@@ -24,14 +24,15 @@ const usersSchema = new mongoose.Schema({
   destinations: Array,
   interests: Array,
   encryptedPassword: String,
-  toJSON: {
-    //modifying the data that gets presented so you don't show encrypted passwords
-    versionKey: false,
-    transform: function (doc, ret) {
-      delete ret.encryptedPassword;
-    },
-  },
 });
+
+usersSchema.set("versionKey", false);
+
+usersSchema.options.toJSON = {
+  transform: function (doc, ret) {
+    delete ret.encryptedPassword;
+  },
+};
 
 //encrypt given plain password and store into model instance
 usersSchema.methods.setEncryptedPassword = function (plainPassword) {
