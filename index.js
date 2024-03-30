@@ -118,7 +118,16 @@ app.post("/users", function (request, response) {
         newUser
           .save()
           .then(() => {
-            response.status(201).send("Created");
+            const responseData = {
+              _id: newUser._id,
+              name: newUser.name,
+              birthday: newUser.birthday,
+              email: newUser.email,
+              destinations: newUser.destinations,
+              interests: newUser.interests,
+              __v: newUser.__v,
+            };
+            response.status(201).json(responseData);
           })
           .catch((error) => {
             if (error.errors) {

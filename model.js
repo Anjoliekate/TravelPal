@@ -20,10 +20,10 @@ const usersSchema = new mongoose.Schema({
     },
   },
   password: { type: String, required: true, minlength: 8 },
-  encryptedPassword: String,
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   destinations: Array,
   interests: Array,
+  encryptedPassword: String,
   toJSON: {
     //modifying the data that gets presented so you don't show encrypted passwords
     versionKey: false,
