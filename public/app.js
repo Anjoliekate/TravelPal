@@ -143,12 +143,16 @@ Vue.createApp({
               console.log("User ID:", data.userId);
               localStorage.setItem("userId", data.userId);
               this.loadUserInfo(data.userId);
-              fetch(`users/${data.userId}/destinations`)
+              fetch(`users/${data.userId}/destinations`, {
+                credentials: "include",
+              })
                 .then((response) => response.json())
                 .then((destinations) => {
                   this.destinations = destinations;
                 });
-              fetch(`users/${data.userId}/interests`)
+              fetch(`users/${data.userId}/interests`, {
+                credentials: "include",
+              })
                 .then((response) => response.json())
                 .then((interests) => {
                   this.interests = interests;

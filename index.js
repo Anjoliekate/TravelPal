@@ -45,7 +45,10 @@ function authorizeRequest(adminOnly) {
         } else {
           response
             .status(401)
-            .send("zombie orphan session from old user, user doesn't exist");
+            .send(
+              "zombie orphan session from old user, user doesn't exist",
+              user
+            );
         }
       });
     } else {
