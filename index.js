@@ -10,24 +10,25 @@ const bcrypt = require("bcrypt");
 // extended allows you to send different structures of URL encoded data
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static("public"));
-app.use(cors());
+app.use(
+  cors({
+    credentials: true,
+    origin: function (origin, callback) {
+      callback(null, origin);
+    },
+  })
+);
+
 app.use(
   session({
     secret: "oijxlvkcoxizcvoihdzopojnfldosv",
     saveUninitialized: true,
     resave: false,
+    secure: true,
+    cookie: { secure: true },
+    sameSite: "None",
   })
 );
-
-// app.use(
-//   session({
-//     secret: "oijxlvkcoxizcvoihdzopojnfldosv",
-//     saveUninitialized: true,
-//     resave: false,
-//     cookie: { secure: true },
-//     sameSite: "none",
-//   })
-// );
 
 //middlewares are gatekeeper of whether or not request is authorized
 //*
@@ -126,6 +127,7 @@ app.post("/users", function (request, response) {
               interests: newUser.interests,
               __v: newUser.__v,
             };
+            response.set("Access-Control-Allow-Origin", "*");
             response.status(201).json(responseData);
           })
           .catch((error) => {
@@ -156,6 +158,7 @@ app.post("/login", function (request, response) {
       user.verifyEncryptedPassword(password).then((match) => {
         if (match) {
           request.session.userId = user._id;
+          response.set("Access-Control-Allow-Origin", "*");
           response.status(200).json({ userId: user._id });
         } else {
           response.status(401).send("Invalid email or password");
@@ -168,12 +171,14 @@ app.post("/login", function (request, response) {
 //*
 // authentication: create session
 app.get("/session", authorizeRequest(false), function (request, response) {
+  response.set("Access-Control-Allow-Origin", "*");
   response.status(401).send("Not Authenticated");
 });
 
 // authentication: delete session
 app.delete("/session", authorizeRequest(false), function (request, response) {
   request.session.userId = null;
+  response.set("Access-Control-Allow-Origin", "*");
   response.status(200).send("Logged out");
 });
 //*
@@ -189,6 +194,7 @@ app.post("/session", authorizeRequest(false), function (request, response) {
             //TODO: save the users ID into session data
             //set to null if deleteing session
             request.session.userId = user._id;
+            response.set("Access-Control-Allow-Origin", "*");
             response.status(201).send("authenticated");
           } else {
             response.status(401).send("not authenticated");
@@ -214,6 +220,7 @@ app.post(
         } else {
           user.destinations.push(destination);
           user.save().then(() => {
+            response.set("Access-Control-Allow-Origin", "*");
             response.status(201).json({ message: "Destination added" });
           });
         }
@@ -238,6 +245,7 @@ app.post(
         } else {
           user.interests.push(interest);
           user.save().then(() => {
+            response.set("Access-Control-Allow-Origin", "*");
             response.status(201).json({ message: "Interest added" });
           });
         }
