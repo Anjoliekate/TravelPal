@@ -24,9 +24,7 @@ app.use(
     secret: "oijxlvkcoxizcvoihdzopojnfldosv",
     saveUninitialized: true,
     resave: false,
-    secure: true,
     cookie: { secure: true },
-    sameSite: "None",
   })
 );
 

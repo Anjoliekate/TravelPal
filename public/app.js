@@ -105,6 +105,7 @@ Vue.createApp({
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
+          "Access-Control-Allow-Methods": "POST",
         },
         credentials: "include",
         body: data,
@@ -138,25 +139,29 @@ Vue.createApp({
       };
       fetch("login/", requestOptions)
         .then((response) => {
-          if (response.status === 200) {
-            response.json().then((data) => {
-              console.log("User ID:", data.userId);
-              localStorage.setItem("userId", data.userId);
-              this.loadUserInfo(data.userId);
-              fetch(`users/${data.userId}/destinations`, {
-                credentials: "include",
-              })
-                .then((response) => response.json())
-                .then((destinations) => {
-                  this.destinations = destinations;
+          if (response.status == 200) {
+            fetch("sessions/", requestOptions).then((response) => {
+              if (response.status == 201) {
+                response.json().then((data) => {
+                  console.log("User ID:", data.userId);
+                  localStorage.setItem("userId", data.userId);
+                  this.loadUserInfo(data.userId);
+                  fetch(`users/${data.userId}/destinations`, {
+                    credentials: "include",
+                  })
+                    .then((response) => response.json())
+                    .then((destinations) => {
+                      this.destinations = destinations;
+                    });
+                  fetch(`users/${data.userId}/interests`, {
+                    credentials: "include",
+                  })
+                    .then((response) => response.json())
+                    .then((interests) => {
+                      this.interests = interests;
+                    });
                 });
-              fetch(`users/${data.userId}/interests`, {
-                credentials: "include",
-              })
-                .then((response) => response.json())
-                .then((interests) => {
-                  this.interests = interests;
-                });
+              }
             });
             this.displayHomePage();
           } else {
@@ -203,7 +208,7 @@ Vue.createApp({
     },
 
     loadUserInterests: function (userId) {
-      requestOptions = { credentials: "include" };
+      requestOptions = { mode: "cors", credentials: "include" };
       fetch(`users/${userId}/interests`, requestOptions)
         .then((response) => response.json())
         .then((interests) => {
@@ -257,6 +262,7 @@ Vue.createApp({
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "Access-Control-Allow-Methods": "PUT",
         },
         credentials: "include",
         body: JSON.stringify(userData),
