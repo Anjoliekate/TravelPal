@@ -106,6 +106,7 @@ Vue.createApp({
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
+        credentials: "include",
         body: data,
       };
       fetch("users/", requestOptions).then((response) => {
@@ -132,6 +133,7 @@ Vue.createApp({
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
+        credentials: "include",
         body: data,
       };
       fetch("login/", requestOptions)
@@ -171,7 +173,8 @@ Vue.createApp({
     },
 
     loadUsersCollection: function () {
-      fetch("users/").then((response) => {
+      requestOptions = { credentials: "include" };
+      fetch("users/", requestOptions).then((response) => {
         // contains the status code, headers, and body etc.
         if (response.status == 200) {
           response.json().then((TravelsFromServer) => {
@@ -184,7 +187,8 @@ Vue.createApp({
     },
 
     loadUserDestinations: function (userId) {
-      fetch(`users/${userId}/destinations`)
+      requestOptions = { credentials: "include" };
+      fetch(`users/${userId}/destinations`, requestOptions)
         .then((response) => response.json())
         .then((destinations) => {
           console.log("User Destinations:", destinations);
@@ -195,7 +199,8 @@ Vue.createApp({
     },
 
     loadUserInterests: function (userId) {
-      fetch(`users/${userId}/interests`)
+      requestOptions = { credentials: "include" };
+      fetch(`users/${userId}/interests`, requestOptions)
         .then((response) => response.json())
         .then((interests) => {
           console.log("User Interests:", interests);
@@ -215,7 +220,8 @@ Vue.createApp({
       newUserHomePage.style = "display:none";
       var returningUserHomePage = document.getElementById("edit-info");
       returningUserHomePage.style = "display:grid";
-      fetch(`users/${userId}`)
+      requestOptions = { credentials: "include" };
+      fetch(`users/${userId}`, requestOptions)
         .then((response) => response.json())
         .then((userData) => {
           console.log("User Info:", userData);
@@ -248,6 +254,7 @@ Vue.createApp({
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify(userData),
       })
         .then((response) => {
@@ -289,6 +296,7 @@ Vue.createApp({
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
+        credentials: "include",
         body: data,
       };
       fetch(`users/${userId}/destinations`, requestOptions)
@@ -296,7 +304,7 @@ Vue.createApp({
           if (response.status === 201) {
             console.log("Destination added successfully");
             this.loadUserDestinations(userId);
-            fetch(`users/${userId}/destinations`)
+            fetch(`users/${userId}/destinations`, { credentials: "include" })
               .then((response) => response.json())
               .then((destinations) => {
                 this.destinations = destinations;
@@ -320,13 +328,14 @@ Vue.createApp({
         }
         const requestOptions = {
           method: "DELETE",
+          credentials: "include",
         };
         fetch(`users/${userId}/destinations/${destination}`, requestOptions)
           .then((response) => {
             if (response.status === 204) {
               console.log("Destination removed successfully");
               this.loadUserDestinations(userId);
-              fetch(`users/${userId}/destinations`)
+              fetch(`users/${userId}/destinations`, { credentials: "include" })
                 .then((response) => response.json())
                 .then((destinations) => {
                   this.destinations = destinations;
@@ -356,6 +365,7 @@ Vue.createApp({
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
         },
+        credentials: "include",
         body: data,
       };
       fetch(`users/${userId}/interests`, requestOptions)
@@ -363,7 +373,7 @@ Vue.createApp({
           if (response.status === 201) {
             console.log("Interest added successfully");
             this.loadUserInterests(userId);
-            fetch(`users/${userId}/interests`)
+            fetch(`users/${userId}/interests`, { credentials: "include" })
               .then((response) => response.json())
               .then((interests) => {
                 this.interests = interests;
@@ -388,13 +398,14 @@ Vue.createApp({
         }
         const requestOptions = {
           method: "DELETE",
+          credentials: "include",
         };
         fetch(`users/${userId}/interests/${interest}`, requestOptions)
           .then((response) => {
             if (response.status === 204) {
               console.log("Interest removed successfully");
               this.loadUserInterests(userId);
-              fetch(`users/${userId}/interests`)
+              fetch(`users/${userId}/interests`, { credentials: "include" })
                 .then((response) => response.json())
                 .then((interests) => {
                   this.interests = interests;
