@@ -3,7 +3,7 @@
 # TravelPal
 
 Deployed Web-App:
-https://travel-pal-api.onrender.com/
+https://s24-sessions-Anjoliekate.onrender.com/
 
 High-fidelity prototype:
 https://www.figma.com/file/OE35xQiVS06nt9klhVgwWJ/Untitled?type=design&node-id=0-1&mode=design
