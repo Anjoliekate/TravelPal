@@ -1,0 +1,96 @@
+*Topics to cover for midterm project:
+
+MUST:
+*REST actions: member routes
+*Vue concepts: contextual events, view states
+More data queries: filtering, searching sorting (Wednesday the 14th)
+Vue: computed properties 
+Client-side validation
+Server-side validation
+Server/Client app deployment
+
+Maybe:
+Image uploads/attachments (go to djholt github to see files on how to do this.)
+
+Later: 
+User registration/authentication/authorization
+WebSockets
+
+--------------------------------------------------------------------------------------------------------------------
+02/12/24
+Relational data with MongoDB + Mongoose (found in populate mongoose docs)
+
+Relation examples (look at first example on  mongoosejs.com/docs/populate.html we used this to compare)
+
+| ONE-TO-ONE(rare)                    |ONE-TO-MANY (most common)             | MANY-TO-MANY(common)                 |
+|-------------------------------------|--------------------------------------|--------------------------------------|
+| Author -> one book                  |Author -> many books                  | Students -> many Teachers            |
+|                                     |Music teacher -> many students        | Teachers -> many students            |
+
+polymorphic give a type ref:'person' to a author or fans they are both 'people' so they have polymorphic relationship
+
+--------------------------------------------------------------------------------------------------------------------
+02/14/24
+Data queries: filtering, searching, & sorting
+
+https://mongoosejs.com/docs/queries.html
+
+use model.find() in mongoose to filter things by category
+LIKE operation in SQL does string matching but in mongoose we use reg expressions like:
+/john/i i meaning case insensitive it would include any string that contains john
+/^john/i starts with john
+/john$/i ends with john
+/^john$/i starts and ends with john 
+if no i then its case sensitive
+/|d+$/ anything that matches at least one digit at the end of the value
+
+For example if I want to find foods with a rating greater than 5 and/or by name and/or want to sort in some order :
+use foods collection still but use query strings
+use params in postman 
+not this: https://localhost:8080/foods/reallygood
+use query strings like this: https://localhost:8080/foods?rating=reallygood
+
+how to use filters in js:
+
+app.get("/foods", function (request, response) {
+    console.log("query:", request.query);
+    var filter = {}
+    if request.query.name{
+        //client is requesting to filter foods by name, put i to make case insensitive
+        filter.name = new RegExp(request.query.name, "i")
+    }
+    if (request.query.rating){
+        //client is requesting to filter rating 
+        if(request.query.rating == 'excellent'){
+            filter.rating = {$gt: 8}
+        } else if (request.query.rating == 'good'){
+        filter.rating = {
+            $gt: 5
+        }
+    }}
+    if (request.sort){
+        if (request.sort == "rating"){
+         order.rating = -1
+        }
+    }
+    model.Food.find(filter).sort(order).then((foods)=>{
+        response.json(foods)
+    })
+});
+
+in LoadFoods() if you want to do it on the client side implemented by calling loadfoods filter on a button click:
+var query = "?"
+if (this.foodsSearch == 'rating'){
+    query.name = this.foodsSearch
+}
+const queryString = new URLSearchParams(query.name)?
+fetch("localhost:8080/foods?" + queryString).then...
+
+in vue html:
+<input v-model="foodsSearch">
+--------------------------------------------------------------------------------------------------------------------
+
+
+
+
+

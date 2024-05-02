@@ -1,0 +1,49 @@
+Arrow Functions: will always inheart value for this outside of itself.
+
+    var that = this;
+    (r) => {
+        this.___ 
+        ^ is inherited thus this is always that
+    }
+
+if using arrow function:
+    loadPetsCollection: function () {
+      fetch("http://localhost:8080/pets").then((response) => {
+        // contains the status code, headers, and body etc.
+        if (response.status == 200) {
+          response.json().then((petsFromServer) => {
+            // use arrow function instead to continue the value of this.
+            console.log("recieved foods from API: ", petsFromServer);
+            this.pets = petsFromServer;
+          });
+        }
+      });
+    },
+
+
+Lambda: this is not necessarily equal to that. 
+
+    var that = this;
+    function (r) {
+        this.___
+        ^ is assigned 
+    }
+
+if using lambda:
+loadPetsCollection: function () {
+      var that = this; 
+      // declare outside of the function so it can be used in the function if using lambda function.
+      fetch("http://localhost:8080/pets").then( function (response) {
+        // contains the status code, headers, and body etc.
+        if (response.status == 200) {
+          response.json().then( function (petsFromServer) {
+            // use arrow function instead to continue the value of this.
+            console.log("recieved foods from API: ", petsFromServer);
+            that.pets = petsFromServer;
+            // we use the variable that.pets bc this.pets only refers to the scope of the function. so we must declare that = this before the other functions get called.
+            // if we used this.pets it would look for pets in the fetch function instead of our pets object in the data function.
+          });
+        }
+      });
+    },
+  },

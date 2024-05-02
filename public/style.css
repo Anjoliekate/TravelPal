@@ -1,0 +1,196 @@
+body {
+  display: grid;
+  justify-content: center;
+  background-color: rgb(226, 224, 221);
+}
+
+h1 {
+  font-family: "Knewave", cursive;
+  color: rgb(19, 53, 77);
+  font-size: 50px;
+}
+
+#login button {
+  background-color: rgb(19, 53, 77);
+  color: white;
+  border: none;
+  padding: 10px 10px;
+  border-radius: 5px;
+  font-family: sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+}
+.title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-bottom: 30px;
+}
+h2 {
+  font-family: sans-serif;
+  color: rgb(19, 53, 77);
+}
+input {
+  padding: 10px;
+  width: 90%;
+  border-radius: 5px;
+}
+label {
+  font-family: sans-serif;
+  color: rgb(19, 53, 77);
+}
+ul {
+  padding-left: 0;
+}
+li {
+  font-family: sans-serif;
+  color: rgb(71, 94, 94);
+  list-style: none;
+}
+
+#returning-user-inputs {
+  display: none;
+}
+
+#LoginBox {
+  padding-left: 20px;
+  padding-right: 80px;
+  padding-top: 30px;
+  padding-bottom: 20px;
+  border: 3px solid rgb(19, 53, 77);
+  background-color: white;
+  border-radius: 20px;
+  margin-top: 50px;
+  display: inline-flex;
+}
+p {
+  font-family: sans-serif;
+  color: rgb(0, 0, 0);
+  text-align: center;
+}
+.hero-image {
+  height: 80vh;
+  border-radius: 20px;
+}
+
+#login {
+  padding-left: 80px;
+}
+
+#list-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid rgb(19, 53, 77);
+}
+
+#trash {
+  width: 10px;
+  opacity: 0.5;
+  cursor: pointer;
+}
+
+#add {
+  background-color: rgb(19, 53, 77);
+  color: white;
+  border: none;
+  padding: 10px 10px;
+  border-radius: 5px;
+  font-family: sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+}
+
+#HomeBox {
+  padding-right: 50px;
+  border: 3px solid rgb(19, 53, 77);
+  background-color: white;
+  border-radius: 20px;
+  margin-top: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  text-align: center;
+}
+
+#homePage {
+  display: none;
+  padding-top: 50px;
+}
+h1 {
+  text-align: center;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+}
+
+#column {
+  width: 45%;
+}
+
+#new-destination-input,
+#new-interest-input {
+  margin-top: -25px;
+  margin-left: 100px;
+  width: 70%;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+#userInfo {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 30px;
+  padding-right: 30px;
+  border: 1px solid rgb(43, 48, 51);
+  background-color: rgb(204, 205, 206);
+  border-radius: 20px;
+  margin-top: -146px;
+  margin-left: -3px;
+  height: 65vh;
+}
+#userInfo p {
+  text-align: left;
+  padding: 10px;
+  border: 1px solid rgb(19, 53, 77);
+  background-color: rgb(255, 255, 255);
+  border-radius: 10px;
+  margin: 10px;
+}
+
+#profile-pic {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  margin: 0 auto;
+  display: block;
+  object-fit: cover;
+}
+#profile-pic img {
+  border-color: 1px solid black;
+}
+
+.title-home {
+  padding-left: 300px;
+}
+
+#question {
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
+  color: rgb(19, 53, 77);
+  font-size: 17px;
+  display: grid;
+  justify-content: center;
+}
+
+#edit-info {
+  display: none;
+}

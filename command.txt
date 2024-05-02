@@ -1,0 +1,8 @@
+npm init 
+npm install
+less package.json
+git ignore get rid of node modules
+
+middleware 
+client -> request -> server -> reponse -> client
+middle interrogates request and processes things for the reponse before sending back. 
